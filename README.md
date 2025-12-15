@@ -1,130 +1,124 @@
-<h1 align="center"> UAV-VisLoc: A Large-scale Dataset for UAV Visual Localization </h1>
+**A Dataset for UAV Visual Localization**
 
-Our technical report has been released on the [arXiv](https://arxiv.org/abs/2405.11936). We also introduce this dataset in Chinese on our [Zhihu Webpage](https://zhuanlan.zhihu.com/p/699030211).
+**1. Related works**
 
-## 0. Table of Contents
+In recent years, with the rapid advancement of science and technology, unmanned aerial vehicles (UAVs) have been increasingly adopted across military, agricultural, and industrial applications. Among the key technologies enabling UAV autonomy, navigation and localization systems play a central role. Currently, UAV positioning typically relies on Global Navigation Satellite Systems (GNSS). However, in real-world missions, UAVs often operate in challenging environments—such as urban canyons, conflict zones, and mountainous or forested areas—where GNSS signals are vulnerable to occlusion (by buildings or vegetation), multipath effects, and deliberate interference, thereby severely compromising operational safety and mission reliability. For example, during the 2020 Nagorno-Karabakh conflict, GNSS outages were reported to be associated with UAV mission failure rates as high as 37%. Consequently, achieving reliable UAV localization in GNSS-denied environments has become a pressing and critical challenge.
 
-* [Introduction](#1-introduction)
+Against this background, various localization approaches have been proposed, including vision-based methods, inertial navigation, and multi-sensor fusion. Among them, vision-based localization has attracted increasing attention due to its relatively low cost and potential for high accuracy in well-lit, texture-rich environments. These methods extract and match image features to enable reliable UAV positioning in GNSS-denied environments. Furthermore, vision-based absolute localization for UAVs registers onboard imagery to reference geospatial data, such as satellite imagery, to obtain absolute position estimates. This approach mitigates cumulative drift and shows strong promise for future development.
 
-* [About Dataset](#2-about-dataset)
+However, the performance of vision-based localization depends heavily on the visual consistency between aerial images and georeferenced satellite imagery. Owing to the high cost and limited accessibility of synchronized data collection, most studies rely on publicly available satellite imagery sources, such as Google Earth. In practice, UAV imagery and satellite imagery are often collected at different times, resulting in substantial mismatches in appearance during image matching, including seasonal changes, illumination differences, and other domain-specific variations.
 
-  * [Overall Dataset](#21-overall-dataset) 
+**2. Existing Problems**
 
-  * [Dataset Example](#22-dataset-example)
+In our UAV vision-based localization research, we use the public UAV-VisLoc dataset as a benchmark. Released by Xu W, this dataset contains UAV images and georeferenced satellite imagery collected from real-world environments, covering diverse regions and terrain types. We thank Xu W for making this open-source dataset available, which has greatly facilitated and supported our UAV vision localization research.
 
-* [Contributions](#3-contributions)
+However, during our experiments, we found several issues in the dataset. First, the annotated center coordinates (latitude and longitude) of the UAV images are offset from the true image centers, with non-negligible deviations (Fig. 1). Second, due to temporal misalignment between UAV and satellite data, noticeable scene and land-cover changes are present (Fig. 2). As a result, corresponding features between UAV and satellite images show poor consistency, which significantly degrades the accuracy of vision-based localization.
+![](1.jpg)
+Figure 1. Comparison of positions before and after calibration (offset 17 meters)
+![](2.png)
+Figure 2. Comparison of images from the same location in the dataset
 
-* [Citation](#4-citation)
+We attribute these issues to the following factors. For the positional reference of UAV imagery, author primarily uses the planned flight trajectories as a proxy for ground truth. In practice, however, UAVs are subject to wind disturbances during flight, which causes deviations from the preplanned paths and results in non-negligible positional errors.
 
-## 1. Introduction
-We unify the definition of visual localization methods for UAVs in real scenarios and propose a dataset as a benchmark for the visual localization task. The UAV can obtain its location coordinates by matching the UAV image with the satellite map when losing its GNSS coordinates. To construct the benchmark dataset, we collect a sequence of images on the UAV flight track in our dataset, and we further collect an orthorectified remote sensing map covering a large geographic area in which every pixel is labeled with coordinates.
+Regarding scene inconsistency, rapid urbanization and land-use changes in recent years have substantially altered local landscapes. For example, in the Huzhou subset, UAV images were captured in June 2019, whereas the satellite images were acquired in July 2023. This four-year temporal gap leads to noticeable scene and land-cover changes (Fig. 3). Moreover, satellite imagery of the same location can vary significantly over time; in particular, the image dated November 3, 2020 exhibits obvious mosaicking artifacts, likely due to Google Earth stitching satellite tiles from different regions.
+![](3.png)
+Figure 3. Satellite images from different times on Google Earth
 
-The dataset collecting process is shown in Fig. 1. The task is defined as a UAV obtaining the coordinates of its current location by matching the down image with the satellite map when losing its GNSS coordinates.
+**3. Contributions**
 
+Considering the impact of the aforementioned issues on UAV vision localization testing, which cannot be ignored, our laboratory refined the dataset accordingly. To mitigate errors in the positional ground truth, we treat the image center as a proxy for the UAV position at the time of capture. After annotating the centers of the UAV images, and since the satellite imagery is sourced from Google Earth, we manually corrected the positional annotations associated with the image centers in the UAV-VisLoc dataset released by Xu W. Specifically, we identified nearby landmarks along the flight path close to each image center and adjusted the reference positions accordingly. Representative examples before and after correction are presented in Fig. 4 (regions A, B, and C). This manual refinement is time-consuming, and we placed the corrected annotations as close as possible to the image centers to support subsequent UAV vision-based localization evaluation.
 
-| ![fig1.png](https://github.com/IntelliSensing/UAV-VisLoc/blob/main/img/fig1.png) | 
-|:--:| 
-| *Fig. 1 The dataset collecting process.The red point in the coordinate system represents the projection of the drone's current location on the ground, i.e., the center point of the image taken by the drone. The yellow points represent the satellite map boundaries of the entire flight range.* |
+Through this manual annotation, our laboratory identified 9 flight paths across 3 regions, covering various terrain features such as rural areas, fields, and urban environments. In addition, we created a virtual simulation scenario, which yielded 3 UAV flight paths with no errors in the UAV's reference position. In summary, the UAV vision absolute localization dataset consists of the following: Dataset Set-A, Set-B, and Set-C represent real UAV flight scenarios, while Set-D is a simulated dataset constructed by Yupeng Di. The dataset covers 4 regions and 12 flight paths, with a total flight distance of 104,498 meters.
+![](4.png)
+（a）
+![](5.png)
+（b）
+![](6.png)
+（c）
 
-## 2. About Dataset
+Figure 4. Comparison of trajectories before and after calibration on Google Maps (yellow and green represent pre- and post-calibration, respectively)
 
-### 2.1 Overall Dataset
+---
 
-You can download our overall dataset (16.4 GB) on [Google Drive](https://drive.google.com/file/d/1xYODANyilEMM3CfWh85APwkTHQeLTcCT/view?usp=sharing) or [Baidu Net Disk](https://pan.baidu.com/s/13zgbP3Kjk1FDfZ47fBaC0g?pwd=rsai ).
+**4. Dataset Details and Parameters**
 
-Our overall dataset contains 6,742 drone images and 11 satellite maps, with a total size of 16.4GB. As presented in TABLE I, we provide the attributes of drone images, such as the latitude and longitude of the center point, shooting height, shooting date, and drone heading angle (Phi). The resolution of drone images is roughly 0.1 m to 0.2 m per pixel. We further provide the GPS latitude and longitude ranges for 11 satellite maps. One satellite map can encompass various terrains, such as cities, towns, farms, and rivers, and with a spatial resolution of 0.3 m. 
+|               |              |              |     |                                 |                                         |             |             |               |
+| ------------- | ------------ | ------------ | --- | ------------------------------- | --------------------------------------- | ----------- | ----------- | ------------- |
+| Trajectory    | Drone Images | Distance (m) | Set | Location                        | Scene                                   | Altitude(m) | Flight date | Satelite date |
+| Trajectory 1  | 90           | 8441         | A   | Taizhou City, China             | Plain (including fields and city areas) | 466         | 2018.10     | 2021.4        |
+| Trajectory 2  | 90           | 8407         | A   | Taizhou City, China             | Plain (including fields and city areas) | 466         | 2018.10     | 2021.4        |
+| Trajectory 3  | 90           | 8445         | A   | Taizhou City, China             | Plain (including fields and city areas) | 466         | 2018.10     | 2021.4        |
+| Trajectory 4  | 90           | 8884         | B   | Huzhou City, China              | Plain (including farmland and town)     | 551         | 2019.6      | 2018.4        |
+| Trajectory 5  | 94           | 9277         | B   | Huzhou City, China              | Plain (including farmland and town)     | 551         | 2019.6      | 2018.4        |
+| Trajectory 6  | 105          | 10360        | B   | Huzhou City, China              | Plain (including farmland and town)     | 551         | 2019.6      | 2018.4        |
+| Trajectory 7  | 49           | 6256         | C   | Danshan City, China             | Wind-erosion landform                   | 2573        | 2023.10     | 2021.3        |
+| Trajectory 8  | 49           | 6225         | C   | Danshan City, China             | Wind-erosion landform                   | 2573        | 2023.10     | 2021.3        |
+| Trajectory 9  | 48           | 6132         | C   | Danshan City, China             | Wind-erosion landform                   | 2573        | 2023.10     | 2021.3        |
+| Trajectory 10 | 90           | 11128        | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
+| Trajectory 11 | 70           | 8269         | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
+| Trajectory 12 | 110          | 12382        | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
 
+![](7.png)
+（a）
+![](8.png)
+（b）
+![](9.png)
+（c）
+![](10.png)
+Figure 5. Zoomed-in and comparison view of the dataset
 
-| ![table2.png](https://github.com/IntelliSensing/UAV-VisLoc/blob/main/img/table2.png)| 
-|:--:| 
-| *TABLE I: IMAGE ATTRIBUTE COMPOSITION FOR THE UAV-VisLoc DATASET.* |
+---
 
+**5. Dataset Organization**
+├────── Sec-A
+│      ├────── Tra.1                        /* Drone Images
+│      │      ├────── 03_0001.JPG
+│      │      ├────── 03_0002.JPG
+│      │      ├────── 03_0003.JPG
+│      │      ├────── ..
+│      │      └────── Tra1.csv              /* format as: filename latitude longitude
+│      ├────── Tra.2
+│      │      ├────── 03_0001.JPG
+│      │      ├────── 03_0002.JPG
+│      │      ├────── 03_0003.JPG
+│      │      ├────── ..
+│      │      └────── Tra2.csv
+│      ├────── Tra.3
+│      │      ├────── 03_0001.JPG
+│      │      ├────── 03_0002.JPG
+│      │      ├────── 03_0003.JPG
+│      │      ├────── ..
+│      │      └────── Tra3.csv
+│      ├────── satellite-A.tif                 /* Satellite Maps
+│      └────── satellite-A.txt                 /* Satellite Maps latitude longitude
+├────── Sec-B
+│      ├────── Tra.4
+│      │      ├────── 03_0001.JPG
+│      │      ├────── 03_0002.JPG
+│      │      ├────── 03_0003.JPG
+│      │      ├────── ..
+│      │      └────── Tra4.csv
+│      ├────── Tra.5
 
+---
 
-The dataset contents are as follows:
+**6.Download Link**
 
-| Drone Images | Satellite Maps | Cites | Categories |
-| ------------ | -------------- | ----- | ---------- |
-| 6,742        | 11             | 11    | 7          |
+you can download it form 
+https://1drv.ms/u/c/40d881ddc464ca14/IQCdyW_q_UzwS7P0xI3L_keTARJ18NLjOSf3Hlx9YghXIPs
 
-
-More detailed file structure:
+**7.Attribution**
+If you find our work useful we'd love to hear from you. If you use this repositorty as part of your research can you please cite the repository in your work:
 
 ```
-├── UAV-VisLoc/
-│   ├── satellite_coordinates_range.csv   /* format as: filename latitude longitude
-│   ├── 01/
-│       ├── drone/                    /* Drone Images
-│           ├── 01_0001.JPG
-│           ├── 01_0002.JPG
-│           ├── 01_0003.JPG
-|           ...
-│       ├── satellite01.tif              	   /* Satellite Maps
-│       ├── 01.csv			   		   /* format as: filename latitude longitude height ···
-│   ├── 02/
-│       ├── drone/                     /* Drone Images
-│           ├── 02_0001.JPG
-│           ├── 02_0002.JPG
-│           ├── 02_0003.JPG
-|           ...
-│       ├── satellite02.tif               		/* Satellite Maps
-│       ├── 02.csv				        /* format as: filename latitude longitude height ···
-│   ├── 03/
-│       ├── drone/                      /* Drone Images
-│           ├── 03_0001.JPG
-│           ├── 03_0002.JPG
-│           ├── 03_0003.JPG
-|           ...
-│       ├── satellite03.tif              	    /* Satellite Maps
-│       ├── 03.csv						/* format as: filename latitude longitude height ···
-```
-
-### 2.2 Dataset Example
-
-You can download our dataset example (2.04 GB) on [Google Drive](https://drive.google.com/file/d/16tY7tPZiNIoyAhknvyXnp0jAfccIcHtL/view?usp=sharing) or [Baidu Net Disk](https://pan.baidu.com/s/1QPnTwZaW8pT6fzjXPo1SFQ?pwd=rsai).
-
-We further provide a high-quality dataset sample, comprising carefully selected UAV images that exhibit minimal coordinate error and feature a diverse range of topographical elements, with a total size of 2.04 GB.
-
-As shown in Fig. 2, each satellite map downloaded from Google Maps contains all UAV images captured by a single drone flight, which may encompass various terrains such as cities, towns, farms, and rivers. 
-
-| ![fig2.png](https://github.com/IntelliSensing/UAV-VisLoc/blob/main/img/fig2.png) | 
-|:--:| 
-| *Fig. 2 An example of drone images and satellite map. The red dots in the satellite map represent the center points of drone images. The satellite map encompasses various terrains such as cities, towns, farms, and rivers. We also show the drone images of these terrains.* |
-
-Detailed File Structure：
-
-```
-├── UAV-VisLoc/
-│   ├── satellite_coordinates_range.csv   /* format as: filename latitude longitude
-│   ├── 03/
-│       ├── drone/                      /* drone images
-│           ├── 03_0001.JPG
-│           ├── 03_0002.JPG
-│           ├── 03_0003.JPG
-|           ...
-│       ├── satellite03.tif              	    /* satellite map
-│       ├── 03.csv						/* format as: filename latitude longitude height ···
-```
-
-## 3. Contributions
-
-The contributions of this dataset are as follows：
-
-1. **Fixed-wing Drone Images.** Fixed-wing UAVs with long endurance and high flight altitude are now widely used in surveying and mapping, agriculture, and reconnaissance industries. Therefore, in addition to multi-rotor UAVs, our dataset is supplemented with drone images captured at higher altitudes by fixed-wing UAVs to accommodate multi-domain model training and testing.
-2. **Multi-terrain Drone Images.** Our dataset contains drone images of various geomorphological texture features, such as villages, towns, farms, cities, rivers, hills, etc.
-3. **Multi-height and Multi-heading-angle Drone Images.** Our dataset contains drone images at different altitudes, with both low-altitude urban scenes and high-altitude field scenes. Our dataset also contains drone heading angle information, which benefits subsequent related studies.
-4. **Large-scale Visual Localization Dataset.** This dataset provides a sufficient amount of data to support the training and testing of models.
-
-## 4. Citation
-
-If you find this repository useful for your publications, please consider citing our paper.
-
-```LaTeX
-@article{xu2024uavvisloc,
-      title={UAV-VisLoc: A Large-scale Dataset for UAV Visual Localization}, 
-      author={Xu, Wenjia and Yao, Yaxuan and Cao, Jiaqi and Wei, Zhiwei and Liu, Chunbo and Wang, Jiuniu and Peng, Mugen},
-      year={2024},
-      journal={arXiv preprint arXiv:2405.11936},
+@misc{FW-AirSim,
+  author = {LHY},
+  title = {VistaLoc-Set},
+  year = {2025},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/Sea-hy/VistaLoc-Set}}
 }
 ```
 
+Thank you!
