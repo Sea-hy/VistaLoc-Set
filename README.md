@@ -68,7 +68,7 @@ Figure 4. Comparison of trajectories before and after calibration on Google Maps
 | Trajectory 9  | 48           | 6132         | C   | Danshan City, China             | Wind-erosion landform                   | 2573        | 2023.10     | 2021.3        |
 | Trajectory 10 | 90           | 11128        | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
 | Trajectory 11 | 70           | 8269         | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
-| Trajectory 12 | 110          | 12382        | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
+| Trajectory 12 | 100          | 12382        | D   | State of Arizona, United States | Canyon                                  | 2200        | 2022.4      | 2020.2        |
 
 ![](7.png)
 
